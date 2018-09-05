@@ -377,3 +377,27 @@ def get_png_from_image(image_raw_bytes, scale=None, min_value=None, max_value=No
     tmp_file.close()
 
     return content
+
+def get_tilt(image, x_axis, y_axis, w_order=1, order=1):
+    """
+    order is the is the order of the fit.
+    w_order is the order of the weights in terms of the projected intensity.
+    A higher w_order will put more emphasis on parts of the beam with high projected intensity.
+    """
+    np = numpy
+    max_ = np.argmax(image, axis=0)
+    mean_list = y_axis[max_]
+    not_nan = ~np.isnan(mean_list)
+
+    projX = np.sum(image, axis=0)
+    projX_corrected = projX - projX.min()
+
+    mean_image = np.sum(projX_corrected*x_axis)/np.sum(projX_corrected)
+
+    xx = x_axis[not_nan]
+    yy = mean_list[not_nan]
+
+    w = (projX_corrected[not_nan] - projX_corrected.min())**w_order
+    fit = np.polyfit(xx-mean_image, yy, order, w=w)
+
+    return np.polyfit(fit)

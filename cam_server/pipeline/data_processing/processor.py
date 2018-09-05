@@ -228,7 +228,14 @@ def process_image(image, timestamp, x_axis, y_axis, parameters, image_background
                         x.append(float(data[0][0]))  # x
                         y.append(float(data[0][1]))  # y
 
-                    slope, offset = functions.linear_fit(x, y)
+                    #slope, offset = functions.linear_fit(x, y)
+                    if orientation == 'horizontal':
+                        offset, slope = functions.get_tilt(image, x_axis, y_axis)
+                    elif orientation == 'vertical':
+                        offset, slope = functions.get_tilt(image.T, y_axis, x_axis)
+                    else:
+                        raise ValueError("Invalid slice orientation '%s'." % orientation)
+
                     return_value["coupling"] = slope * (gr_x_fit_standard_deviation ** 2)
                     return_value["coupling_slope"] = slope
                     return_value["coupling_offset"] = offset
