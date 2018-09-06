@@ -229,18 +229,12 @@ def process_image(image, timestamp, x_axis, y_axis, parameters, image_background
                         y.append(float(data[0][1]))  # y
 
                     slope, offset = functions.linear_fit(x, y)
-                    #print('functions image[0:10], x_axis[:10], y_axis[:10], orientation')
-                    #print(image[0,0:10], x_axis[:10], y_axis[:10], orientation)
                     if orientation == 'horizontal':
                         slope, offset = functions.get_tilt(image, x_axis, y_axis)
                     elif orientation == 'vertical':
-                        slope0, offset0 = functions.get_tilt(image.T, y_axis, x_axis)
-                        #slope, offset = 1/slope0, -offset0/slope0
-                        slope, offset = slope0, offset0
+                        slope, offset = functions.get_tilt(image.T, y_axis, x_axis)
                     else:
                         raise ValueError("Invalid slice orientation '%s'." % orientation)
-                    print('processor slope, offset, orientation')
-                    print(slope, offset, orientation)
 
                     return_value["coupling"] = slope * (gr_x_fit_standard_deviation ** 2)
                     return_value["coupling_slope"] = slope

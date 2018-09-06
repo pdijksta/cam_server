@@ -398,12 +398,7 @@ def get_tilt(image, x_axis, y_axis, w_order=1, order=1):
     yy = mean_list[not_nan]
 
     w = (projX_corrected[not_nan] - projX_corrected.min())**w_order
-
-    print('functions xx[:10]-mean_image, yy[:10], order, w[:10]')
-    print(xx[:10]-mean_image, yy[:10], order, w[:10])
     fit = np.polyfit(xx-mean_image, yy, order, w=w)
     p = np.poly1d(fit)
-    print('functions p')
-    print(p)
     return p
 
