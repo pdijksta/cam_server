@@ -120,6 +120,7 @@ def process_image(image, timestamp, x_axis, y_axis, parameters, image_background
                 return_value["coupling"] = None
                 return_value["coupling_slope"] = None
                 return_value["coupling_offset"] = None
+                return_value['mean_image'] = None
 
             # Good region and slices should be None if cannot be calculated.
             initialize_good_region_values()
@@ -230,15 +231,18 @@ def process_image(image, timestamp, x_axis, y_axis, parameters, image_background
 
                     slope, offset = functions.linear_fit(x, y)
                     if orientation == 'horizontal':
-                        slope, offset = functions.get_tilt(image, x_axis, y_axis)
+                        (slope, offset), mean_image = functions.get_tilt(image, x_axis, y_axis)
                     elif orientation == 'vertical':
-                        slope, offset = functions.get_tilt(image.T, y_axis, x_axis)
+                        # In case of a vertical orientation, we analyze the rotated picture and then transform the output
+                        (slope0, offset0), mean_image = functions.get_tilt(image.T, y_axis, x_axis)
+                        slope, offset = 1/slope0, -offset0/slope0
                     else:
                         raise ValueError("Invalid slice orientation '%s'." % orientation)
 
                     return_value["coupling"] = slope * (gr_x_fit_standard_deviation ** 2)
                     return_value["coupling_slope"] = slope
                     return_value["coupling_offset"] = offset
+                    return_value['mean_image'] = mean_image
 
                 except:  # Except for slices
                     _logger.exception('Unable to apply slices')

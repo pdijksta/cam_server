@@ -383,6 +383,7 @@ def get_tilt(image, x_axis, y_axis, w_order=1, order=1):
     order is the is the order of the fit.
     w_order is the order of the weights in terms of the projected intensity.
     A higher w_order will put more emphasis on parts of the beam with high projected intensity.
+    The output is relative to the mean image. This parameter should probably be added to the main output.
     """
     np = numpy
     max_ = np.argmax(image, axis=0)
@@ -400,5 +401,5 @@ def get_tilt(image, x_axis, y_axis, w_order=1, order=1):
     w = (projX_corrected[not_nan] - projX_corrected.min())**w_order
     fit = np.polyfit(xx-mean_image, yy, order, w=w)
     p = np.poly1d(fit)
-    return p
+    return p, mean_image
 
